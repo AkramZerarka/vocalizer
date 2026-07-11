@@ -27,15 +27,17 @@ Requirements: Linux x86-64 (glibc ≥ 2.28 — Ubuntu 20.04+, Debian 10+,
 RHEL/Alma 8+, Fedora 29+…), PHP **8.4 or 8.5** NTS. Binary integrity is
 verified via SHA256. (Alpine/musl, ARM, and PHP ZTS are not supported.)
 
-Then download a voice
-([full catalog](https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models)):
+Then download a voice with a single script
+(`./scripts/download-model.sh --help` for the full list):
 
 ```bash
-./scripts/download-chatterbox.sh                                          # realism flagship, 23 languages + cloning (~7.5 GB)
+./scripts/download-model.sh chatterbox                                    # realism flagship, 23 languages + cloning (~7.5 GB)
 ./scripts/download-model.sh sherpa-onnx-supertonic-3-tts-int8-2026-05-11  # 31 languages, near-human (~120 MB)
 ./scripts/download-model.sh sherpa-onnx-pocket-tts-int8-2026-01-26        # voice cloning en (~95 MB)
 ./scripts/download-model.sh vits-piper-en_US-amy-low                      # English, fast (~65 MB)
 ```
+
+Sherpa-onnx catalog: [tts-models](https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models).
 
 Maximum realism (Chatterbox — clones the voice of any reference WAV):
 

@@ -74,4 +74,4 @@ elif "$PHP_BIN" -m | grep -q vocalizer; then
 else
     echo "⚠ Installed, but reload PHP-FPM / check your php.ini"
 fi
-echo "Voices: ./scripts/download-model.sh or https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models"
+echo "Voices: ./scripts/download-model.sh --help  (chatterbox, supertonic, pocket, kokoro, piper…)"
