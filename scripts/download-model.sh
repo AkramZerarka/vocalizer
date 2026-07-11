@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Télécharge un modèle TTS depuis les releases sherpa-onnx.
 #
-#   ./scripts/download-model.sh vits-piper-en_US-amy-low     # anglais, rapide (~65 Mo)
-#   ./scripts/download-model.sh vits-piper-fr_FR-siwis-medium # français
-#   ./scripts/download-model.sh kokoro-multi-lang-v1_0        # qualité premium (~330 Mo)
+#   ./scripts/download-model.sh sherpa-onnx-supertonic-3-tts-int8-2026-05-11  # 31 langues quasi humaines (~120 Mo)
+#   ./scripts/download-model.sh sherpa-onnx-pocket-tts-int8-2026-01-26        # clonage de voix en/fr (~95 Mo)
+#   ./scripts/download-model.sh kokoro-en-v0_19                               # anglais premium (~310 Mo)
+#   ./scripts/download-model.sh vits-piper-en_US-amy-low                      # anglais, rapide (~65 Mo)
 #
 # Catalogue complet:
 #   https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models

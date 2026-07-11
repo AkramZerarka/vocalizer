@@ -17,14 +17,17 @@ final class Engine
      * Charge un modèle TTS (ou le récupère instantanément depuis le cache du processus).
      * Le modèle reste en mémoire entre les requêtes FPM: le chargement n'a lieu qu'une fois.
      *
-     * @param string $modelDir Répertoire du modèle (VITS/Piper, Kokoro, Kitten, Matcha)
-     *                         — détection automatique du type par le contenu.
+     * @param string $modelDir Répertoire du modèle (VITS/Piper, Kokoro, Kitten, Matcha,
+     *                         ZipVoice, Pocket, Supertonic) — détection automatique
+     *                         du type par le contenu du dossier.
      * @param array{
      *     threads?: int,          // threads d'inférence (0 = auto)
      *     provider?: string,      // "cpu" (défaut) ou "cuda" (build VX_CUDA=ON)
      *     type?: string,          // "auto" | "vits" | "kokoro" | "kitten" | "matcha"
-     *     vocoder?: string,       // chemin du vocoder .onnx (requis pour matcha)
-     *     lang?: string,          // indice de langue (kokoro multilingue)
+     *                             //        | "zipvoice" | "pocket" | "supertonic"
+     *     vocoder?: string,       // chemin du vocoder .onnx (requis pour matcha;
+     *                             // zipvoice: sinon vocos_*.onnx du dossier)
+     *     lang?: string,          // indice de langue au chargement (kokoro multilingue)
      *     noise_scale?: float,    // variabilité de la voix (vits/matcha)
      *     noise_scale_w?: float,  // variabilité des durées (vits)
      *     max_num_sentences?: int,// phrases par lot interne
@@ -37,11 +40,16 @@ final class Engine
      * Synthétise un texte en audio.
      *
      * @param array{
-     *     voice?: int,           // speaker id (modèles multi-locuteurs / kokoro)
+     *     voice?: int,           // speaker id (modèles multi-locuteurs / kokoro / supertonic)
      *     speed?: float,         // vitesse (>1 = plus rapide, défaut 1.0)
      *     silence_scale?: float, // silence entre phrases
-     *     num_steps?: int,       // étapes flow-matching (modèles concernés)
+     *     num_steps?: int,       // étapes flow-matching (supertonic: défaut 5, zipvoice: 4)
+     *     lang?: string,         // langue par appel (supertonic: "fr", "ar", "en", … 31 langues)
+     *     ref_audio?: string,    // WAV de référence — clonage de voix (pocket, zipvoice);
+     *                            // pocket: défaut = première voix de test_wavs/ du modèle
+     *     ref_text?: string,     // transcription du WAV de référence (requis pour zipvoice)
      *     extra?: string,        // JSON d'options spécifiques au modèle
+     *                            // (pocket: temperature, seed, max_reference_audio_len…)
      *     timeout_ms?: int,      // délai max (-1 = ini vocalizer.timeout_ms)
      * } $options
      * @throws TextException    texte vide
