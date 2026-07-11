@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Stub IDE pour l'extension vocalizer (synthèse vocale via sherpa-onnx embarqué).
- * Ce fichier n'est jamais exécuté — il documente l'API native pour l'autocomplétion.
+ * IDE stub for the vocalizer extension (text-to-speech via embedded sherpa-onnx).
+ * This file is never executed — it documents the native API for autocompletion.
  */
 
 namespace Vocalizer;
@@ -14,18 +14,18 @@ final class Engine
     private function __construct() {}
 
     /**
-     * Charge un modèle TTS (ou le récupère instantanément depuis le cache du processus).
+     * Loads a TTS model (or fetches it instantly from the per-process cache).
      *
-     * Options communes (tous modèles): threads, provider, type, lang, vocoder,
+     * Common options (all models): threads, provider, type, lang, vocoder,
      * noise_scale, noise_scale_w, max_num_sentences.
      *
-     * Options spécifiques au modèle via `opts` (tableau ou JSON) — ignorées si
-     * le modèle ne les supporte pas. Exemples:
-     *   chatterbox: weight_type, t3_version, profile ("premium" → f16 + anti-hallucination)
-     *   (autres familles: pas d'effet)
+     * Model-specific options via `opts` (array or JSON) — ignored when the
+     * model does not support them. Examples:
+     *   chatterbox: weight_type, t3_version
+     *   (other families: no effect)
      *
-     * Rétrocompatibilité: weight_type et t3_version au niveau racine sont
-     * fusionnés dans opts.
+     * Backward compatibility: root-level weight_type and t3_version are
+     * merged into opts.
      *
      * @param array{
      *     threads?: int,
@@ -44,17 +44,20 @@ final class Engine
     public static function load(string $modelDir, array $options = []): Engine {}
 
     /**
-     * Synthétise un texte en audio.
+     * Synthesizes text into audio.
      *
-     * Options communes (tous modèles): lang, voice, speed, silence_scale,
+     * Common options (all models): lang, voice, speed, silence_scale,
      * num_steps, timeout_ms, reference, reference_text.
      *
-     * Options spécifiques au modèle via `opts` (tableau ou JSON). Exemples:
-     *   supertonic: (lang est aussi accepté en racine)
-     *   chatterbox: temperature, seed, repetition_penalty, guidance_scale
+     * Model-specific options via `opts` (array or JSON). Examples:
+     *   supertonic: (lang is also accepted at the root)
+     *   chatterbox: temperature, seed, repetition_penalty, guidance_scale,
+     *               verify ('off' disables the anti-hallucination guard,
+     *               on by default), verify_retries (re-syntheses with a
+     *               fresh seed when the output is implausible, default 2)
      *   pocket: temperature, seed, max_reference_audio_len
      *
-     * Rétrocompatibilité: ref_audio → reference, ref_text → reference_text,
+     * Backward compatibility: ref_audio → reference, ref_text → reference_text,
      * extra (JSON string) → opts.
      *
      * @param array{
@@ -75,7 +78,7 @@ final class Engine
     public function speak(string $text, array $options = []): Result {}
 
     /**
-     * @param array<string,mixed> $options Mêmes options que speak()
+     * @param array<string,mixed> $options Same options as speak()
      */
     public function speakAsync(string $text, array $options = []): Job {}
 
@@ -109,6 +112,8 @@ final class Result
     public float $seconds;
     public float $generationMs;
     public int $retries;
+    /** Re-syntheses triggered by the anti-hallucination guard (chatterbox). */
+    public int $qualityRetries;
 
     private function __construct() {}
 
@@ -122,7 +127,11 @@ final class Job
     private function __construct() {}
 
     public function isDone(): bool {}
+
+    /** Waits for completion; returns null when the timeout expires first. */
     public function wait(?int $timeoutMs = null): ?Result {}
+
+    /** Cancels the job if it has not started yet. */
     public function cancel(): bool {}
 }
 
